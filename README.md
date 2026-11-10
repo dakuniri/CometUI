@@ -6,12 +6,14 @@ Roblox 用の自作 UI ライブラリ。外部アセット・外部依存なし
 
 - リポジトリ: `https://github.com/dakuniri/CometUI`
 - 本体（raw）: `https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau`
+- サンプル: `UI/sample.luau`（Fly / ESP / Aimbot の実装例）
 
 ```
 comet/
 ├─ script.luau          ← メイン（ACbypass）
 ├─ UI/
 │  ├─ main.luau         ← UI ライブラリ本体
+│  ├─ sample.luau       ← Fly / ESP / Aimbot のサンプル
 │  └─ README.md         ← これ（UI の使い方）
 ├─ method/
 │  └─ ACbypass.lua      ← 原本
@@ -42,7 +44,7 @@ local UIlib = loadstring(game:HttpGet(
 local UIlib = loadstring(readfile("UI/main.luau"))()
 ```
 
-`UI/main.luau` と GitHub 上の `main.luau` は同一（SHA-256 一致確認済み）。
+`UI/main.luau` と GitHub 上の `main.luau` は内容が一致する（`SubTab` の前方宣言バグ修正後は、リポジトリ側の再アップロードが必要）。
 
 ### ModuleScript として置く場合
 
@@ -360,7 +362,8 @@ T.BlurSize  = 20
 
 - リポジトリ: `https://github.com/dakuniri/CometUI`
 - 本体: `https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau`
-- ローカルの `UI/main.luau` と同一内容（SHA-256 `293DD26D...93C167`）。
+- ローカル `UI/main.luau` の SHA-256: `ED82AB07A92751AAB33FE1D67D90C933251C3E05C99AADBBDE6D5D823121CF31`
+- GitHub 上の `main.luau` は `SubTab` 前方宣言バグの修正前の内容。再アップロードで同期する。
 - 更新したらこの README の URL 節と、リポジトリ側の `main.luau` を同期させる。
 
 ## 9. まだ無いもの
@@ -370,3 +373,52 @@ T.BlurSize  = 20
 - 設定の保存 / 読み込み（JSON）
 
 必要になった時点で足す。
+
+---
+
+## 10. サンプル: `UI/sample.luau`
+
+UIlib を実際に使って Fly / ESP / Aimbot を組んだ 1 ファイルのサンプル。
+
+```lua
+loadstring(readfile("UI/sample.luau"))()
+```
+
+GitHub に上げた場合は raw URL から直接:
+
+```lua
+loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/sample.luau"
+))()
+```
+
+### 構成
+
+| タブ | サブタブ | 機能 |
+|---|---|---|
+| Combat（右上） | Aimbot | 有効化 / ホールド / キー / FOV / スムージング / 対象部位 / チーム判定 / 遮蔽判定 |
+| Visual（左下） | ESP | 有効化 / 名前 / 体力バー / 距離 / 最大距離 / 色 |
+| Misc（右下） | Fly | 有効化 / キー / 速度 |
+| Setting（左上） | Config | UI 開閉キー変更 / Unload |
+
+### キー
+
+| 入力 | 動作 |
+|---|---|
+| `RightShift` | UI 表示 / 非表示 |
+| `E`（押している間） | Aimbot |
+| `F` | Fly トグル |
+| `WASD` / `Space` / `LeftCtrl` / `LeftShift` | Fly 移動 / 上昇 / 下降 / 加速 |
+
+### 実装メモ
+
+- ESP は `Drawing` があれば 2D ボックス＋名前＋体力バー＋距離。
+  無ければ `Highlight` ＋ `BillboardGui` に自動フォールバック。
+- Aimbot はカメラの `CFrame` を対象へ `Lerp`。`Smoothing` が大きいほど遅い。
+- 遮蔽判定は `Raycast`。`FilterDescendantsInstances` に自分と対象を入れて自己ヒットを除外。
+- Fly は `HumanoidRootPart.Anchored = true` にして `RenderStepped` で
+  `CFrame` を直接進める方式。`LeftShift` で 2 倍速。
+- Aimbot のキーは `Enum.KeyCode` 前提（マウスボタンを割り当てても動作しない）。
+- Fly 中はキャラクターの物理が止まる。解除で `Anchored = false` に戻す。
+- リスポーン時は `CharacterAdded` で Fly を張り直す。
+

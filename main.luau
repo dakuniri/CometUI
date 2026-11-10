@@ -156,6 +156,10 @@ UIlib.Acrylic = Acrylic
 local Window = {}
 Window.__index = Window
 
+-- forward declarations: CreateWindow closes over these
+local SubTab
+local Section
+
 local SIDES = {
 	TopRight    = { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -18, 0, 16) },
 	BottomLeft  = { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 18, 1, -16) },
@@ -866,10 +870,9 @@ end
 
 --──────────────────────────────────────────── subtab / section
 
-local SubTab = {}
+SubTab = {}
 SubTab.__index = SubTab
-
-local Section = {}
+Section = {}
 Section.__index = Section
 
 local function sectionRow(parent, name, description, height)
