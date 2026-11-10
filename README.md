@@ -44,7 +44,7 @@ local UIlib = loadstring(game:HttpGet(
 local UIlib = loadstring(readfile("UI/main.luau"))()
 ```
 
-`UI/main.luau` と GitHub 上の `main.luau` は内容が一致する（`SubTab` の前方宣言バグ修正後は、リポジトリ側の再アップロードが必要）。
+`UI/main.luau` は GitHub 上の `main.luau` と内容を同期させる（差分が出たら再アップロード）。
 
 ### ModuleScript として置く場合
 
@@ -362,8 +362,8 @@ T.BlurSize  = 20
 
 - リポジトリ: `https://github.com/dakuniri/CometUI`
 - 本体: `https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau`
-- ローカル `UI/main.luau` の SHA-256: `ED82AB07A92751AAB33FE1D67D90C933251C3E05C99AADBBDE6D5D823121CF31`
-- GitHub 上の `main.luau` は `SubTab` 前方宣言バグの修正前の内容。再アップロードで同期する。
+- ローカル `UI/main.luau` の SHA-256: `411EAB8BD174E4600536BBDCA20C8E631427396A738463B7FF4E6FD101081DDE`
+- GitHub 上の `main.luau` はローカルの最新版に合わせて再アップロードする。
 - 更新したらこの README の URL 節と、リポジトリ側の `main.luau` を同期させる。
 
 ## 9. まだ無いもの

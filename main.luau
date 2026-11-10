@@ -713,6 +713,16 @@ function UIlib:CreateWindow(cfg)
 
 	local fadeToken = 0
 
+	local function showOnlySub(sub)
+		for _, t in ipairs(win.Tabs) do
+			for _, s in ipairs(t.Subtabs) do
+				if s.Frame then
+					s.Frame.Visible = (s == sub)
+				end
+			end
+		end
+	end
+
 	function win:SelectTab(tab, silent)
 		if not tab then return end
 		if win.ActiveTab == tab and not silent then return end
@@ -721,6 +731,7 @@ function UIlib:CreateWindow(cfg)
 			t.SetActive(t, t == tab)
 		end
 		win.ActiveTab = tab
+		showOnlySub(nil)
 
 		-- rebuild sub tab strip
 		for _, child in ipairs(subBar:GetChildren()) do
@@ -824,9 +835,7 @@ function UIlib:CreateWindow(cfg)
 		fadeToken = token
 
 		if silent then
-			for _, s in ipairs(tab.Subtabs) do
-				s.Frame.Visible = (s == sub)
-			end
+			showOnlySub(sub)
 			content.GroupTransparency = 0
 			return
 		end
@@ -834,9 +843,7 @@ function UIlib:CreateWindow(cfg)
 		tween(content, Ease.Fast, { GroupTransparency = 1 })
 		task.delay(0.09, function()
 			if not state.alive or fadeToken ~= token then return end
-			for _, s in ipairs(tab.Subtabs) do
-				s.Frame.Visible = (s == sub)
-			end
+			showOnlySub(sub)
 			tween(content, Ease.Out, { GroupTransparency = 0 })
 		end)
 	end
@@ -875,8 +882,14 @@ SubTab.__index = SubTab
 Section = {}
 Section.__index = Section
 
-local function sectionRow(parent, name, description, height)
-	height = height or (description and 46 or 36)
+local function keyName(key)
+	local s = tostring(key or "")
+	s = string.gsub(s, "Enum%.KeyCode%.", "")
+	s = string.gsub(s, "Enum%.UserInputType%.", "")
+	return s
+end
+
+local function sectionRow(parent, name, description, height)	height = height or (description and 46 or 36)
 	local row = create("Frame", {
 		Name = "Row",
 		Size = UDim2.new(1, -4, 0, height),
@@ -1339,7 +1352,7 @@ function Section:Keybind(opt)
 	local btn = create("TextButton", {
 		AnchorPoint = Vector2.new(1, 0.5),
 		Position = UDim2.new(1, -2, 0.5, 0),
-		Size = UDim2.fromOffset(74, 24),
+		Size = UDim2.fromOffset(88, 24),
 		BackgroundColor3 = Theme.Surface,
 		BackgroundTransparency = 0.94,
 		AutoButtonColor = false,
@@ -1353,7 +1366,7 @@ function Section:Keybind(opt)
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		Font = Theme.FontMono,
-		Text = tostring(key),
+		Text = keyName(key),
 		TextSize = 11,
 		TextColor3 = Theme.Text,
 		Parent = btn,
@@ -1363,7 +1376,7 @@ function Section:Keybind(opt)
 
 	local function setListening(on)
 		listening = on
-		label.Text = on and "..." or tostring(api.Value)
+		label.Text = on and "..." or keyName(api.Value)
 		tween(btn, Ease.Fast, {
 			BackgroundTransparency = on and 0.85 or 0.94,
 			BackgroundColor3 = on and Theme.Accent or Theme.Surface,
