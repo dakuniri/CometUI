@@ -4,6 +4,9 @@ Roblox 用の自作 UI ライブラリ。外部アセット・外部依存なし
 アクリルガラス調の半透明パネル、斜めに流れるグレア、四隅に配置するカテゴリタブ、
 上部のサブタブ帯、そして全要素にトゥイーンアニメーション。
 
+- リポジトリ: `https://github.com/dakuniri/CometUI`
+- 本体（raw）: `https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau`
+
 ```
 comet/
 ├─ script.luau          ← メイン（ACbypass）
@@ -20,19 +23,36 @@ comet/
 
 ## 1. 読み込み
 
-### ModuleScript として置く場合
+### GitHub から直接読む（推奨・エグゼキュータ）
 
-`UI/main.luau` を `ModuleScript` として `ReplicatedStorage` か `PlayerGui` 配下に置く。
+リポジトリに本体を置いてあるので、URL から 1 行で落としてこれる。
 
 ```lua
-local UIlib = require(game:GetService("ReplicatedStorage"):WaitForChild("UIlib"))
+local UIlib = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau"
+))()
 ```
+
+`game:HttpGet` はエグゼキュータ環境の関数。`loadstring` と併せて使う。
+キャッシュを避けたい場合は末尾に `?v=1` のようなクエリを付ける。
 
 ### ローカルファイルから読む場合（エグゼキュータ）
 
 ```lua
 local UIlib = loadstring(readfile("UI/main.luau"))()
 ```
+
+`UI/main.luau` と GitHub 上の `main.luau` は同一（SHA-256 一致確認済み）。
+
+### ModuleScript として置く場合
+
+`main.luau` を `ModuleScript` として `ReplicatedStorage` か `PlayerGui` 配下に置く。
+
+```lua
+local UIlib = require(game:GetService("ReplicatedStorage"):WaitForChild("UIlib"))
+```
+
+---
 
 `UIlib` はテーブルを返す。`UIlib:CreateWindow(...)` でも `UIlib.CreateWindow(...)` でも動く。
 
@@ -41,7 +61,9 @@ local UIlib = loadstring(readfile("UI/main.luau"))()
 ## 2. 最小構成
 
 ```lua
-local UIlib = loadstring(readfile("UI/main.luau"))()
+local UIlib = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau"
+))()
 
 local win = UIlib:CreateWindow({
     Title = "comet",
@@ -334,7 +356,14 @@ T.BlurSize  = 20
 
 ---
 
-## 8. まだ無いもの
+## 8. 配布
+
+- リポジトリ: `https://github.com/dakuniri/CometUI`
+- 本体: `https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau`
+- ローカルの `UI/main.luau` と同一内容（SHA-256 `293DD26D...93C167`）。
+- 更新したらこの README の URL 節と、リポジトリ側の `main.luau` を同期させる。
+
+## 9. まだ無いもの
 
 - 本体機能との結線（`script.luau` から UIlib をロードしてトグルに繋ぐ段）
 - カラーピッカー
