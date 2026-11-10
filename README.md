@@ -1,7 +1,7 @@
 # comet · UIlib
 
 Roblox 用の自作 UI ライブラリ。外部アセット・外部依存なし。
-アクリルガラス調の半透明パネル、斜めに流れるグレア、四隅に配置するカテゴリタブ、
+アクリルガラス調の半透明パネル、斜めのグレア、四隅に配置するカテゴリタブ、
 上部のサブタブ帯、そして全要素にトゥイーンアニメーション。
 
 - リポジトリ: `https://github.com/dakuniri/CometUI`
@@ -334,8 +334,6 @@ T.BlurSize  = 20
 | アクリル | `Lighting.BlurEffect` を depth 管理で 1 個だけ生成。閉じると消える |
 | 半透明 | パネル `BackgroundTransparency = 0.30` ＋ 白→青のウォッシュ `UIGradient` |
 | グレア（静止） | 斜めのグロス帯 `Frame` ＋ 5 点の `Transparency` キーフレーム |
-| グレア（動く） | `Heartbeat` で `UIGradient.Offset` を回し、斜めの帯が横切る |
-| 面取り | 四隅に 45° のヘアライン 4 本。継ぎ目なしで切落としの輪郭に見せる |
 | 起動 | `UIScale` 0.94→1（Back）＋ フェード ＋ 下から 14px |
 | 閉じる | フェード ＋ 少し縮んでから `Gui.Enabled = false` |
 | タブ | 背景・文字色・文字サイズ・下線グローを同時トゥイーン |
@@ -343,7 +341,7 @@ T.BlurSize  = 20
 | コンテンツ | `CanvasGroup.GroupTransparency` でアウト → イン |
 | 通知 | 右からスライドイン、右へスライドアウト |
 
-`Heartbeat` のスイープはウィンドウが非表示の間は止まる。
+通知は右からスライドイン、右へスライドアウト。
 
 ---
 
@@ -362,7 +360,7 @@ T.BlurSize  = 20
 
 - リポジトリ: `https://github.com/dakuniri/CometUI`
 - 本体: `https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau`
-- ローカル `UI/main.luau` の SHA-256: `411EAB8BD174E4600536BBDCA20C8E631427396A738463B7FF4E6FD101081DDE`
+- ローカル `UI/main.luau` の SHA-256: `4BAD42F31330657830896C5A32DB03F0028EEADE1F1A168C9928A134ACADF645`
 - GitHub 上の `main.luau` はローカルの最新版に合わせて再アップロードする。
 - 更新したらこの README の URL 節と、リポジトリ側の `main.luau` を同期させる。
 

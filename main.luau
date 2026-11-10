@@ -11,7 +11,6 @@
 
 local Players          = game:GetService("Players")
 local TweenService     = game:GetService("TweenService")
-local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting         = game:GetService("Lighting")
 
@@ -270,25 +269,6 @@ function UIlib:CreateWindow(cfg)
 		NumberSequenceKeypoint.new(1.00, 1),
 	})
 
-	-- glare sweep (animated across the whole window)
-	local sweep = create("Frame", {
-		Name = "Sweep",
-		Size = UDim2.new(1.6, 0, 1.6, 0),
-		Position = UDim2.new(-0.3, 0, -0.3, 0),
-		BackgroundColor3 = Color3.fromRGB(190, 215, 255),
-		ZIndex = 5,
-		Parent = panel,
-	})
-	local sweepGradient = create("UIGradient", { Parent = sweep, Rotation = 20 })
-	sweepGradient.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))
-	sweepGradient.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0.00, 1),
-		NumberSequenceKeypoint.new(0.44, 1),
-		NumberSequenceKeypoint.new(0.50, 0.88),
-		NumberSequenceKeypoint.new(0.56, 1),
-		NumberSequenceKeypoint.new(1.00, 1),
-	})
-
 	-- inner hairline
 	local innerLine = create("Frame", {
 		Name = "InnerLine",
@@ -300,28 +280,6 @@ function UIlib:CreateWindow(cfg)
 	})
 	create("UICorner", { Parent = innerLine, CornerRadius = UDim.new(0, Theme.Radius - 1) })
 	strokeOf(innerLine, Theme.Stroke, 0.94, 1)
-
-	-- chamfer accents (the slanted corner cut reads as one continuous outline)
-	local chamfer = 14
-	local function accentLine(ax, ay, rot, len)
-		local line = create("Frame", {
-			Name = "Chamfer",
-			AnchorPoint = Vector2.new(ax, ay),
-			Position = UDim2.new(ax, 0, ay, 0),
-			Size = UDim2.fromOffset(len, 1),
-			Rotation = rot,
-			BackgroundColor3 = Theme.Stroke,
-			BackgroundTransparency = 0.72,
-			BorderSizePixel = 0,
-			ZIndex = 7,
-			Parent = panel,
-		})
-		return line
-	end
-	accentLine(0, 0, 45, chamfer * 1.42)
-	accentLine(1, 0, -45, chamfer * 1.42)
-	accentLine(0, 1, -45, chamfer * 1.42)
-	accentLine(1, 1, 45, chamfer * 1.42)
 
 	--──────────────────────────────────────── content scaffolding
 
@@ -847,14 +805,6 @@ function UIlib:CreateWindow(cfg)
 			tween(content, Ease.Out, { GroupTransparency = 0 })
 		end)
 	end
-
-	--──────────────────────────────────────── sweep animation
-
-	track(RunService.Heartbeat:Connect(function(dt)
-		if not state.alive or not state.visible then return end
-		local phase = (tick() * 0.11) % 1
-		sweepGradient.Offset = Vector2.new(-1.1 + phase * 2.6, 0)
-	end))
 
 	--──────────────────────────────────────── boot
 
