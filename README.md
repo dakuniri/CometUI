@@ -1,7 +1,7 @@
 # comet · UIlib
 
 Roblox 用の自作 UI ライブラリ。外部アセット・外部依存なし。
-アクリルガラス調の半透明パネル、斜めのグレア、四隅に配置するカテゴリタブ、
+アクリルガラス調の半透明パネル、起動時のスプラッシュ、四隅に配置するカテゴリタブ、
 上部のサブタブ帯、そして全要素にトゥイーンアニメーション。
 
 - リポジトリ: `https://github.com/dakuniri/CometUI`
@@ -70,6 +70,9 @@ local UIlib = loadstring(game:HttpGet(
 local win = UIlib:CreateWindow({
     Title = "comet",
     Subtitle = "loaded",
+    BootText = "comet",              -- 起動スプラッシュの大見出し
+    BootSub = "Rivals · loaded",     -- 補足行（省略可）
+    BootHold = 0.9,                  -- 表示秒数
     Size = Vector2.new(720, 404),
 })
 
@@ -84,7 +87,7 @@ end })
 target:Slider({ Name = "FOV", Min = 0, Max = 180, Default = 90, Step = 1, Suffix = "°" })
 ```
 
-これだけで、ガラスパネル・四隅タブ・サブタブ帯・スクロールコンテンツが組み上がる。
+これだけで、ガラスパネル・起動スプラッシュ・四隅タブ・サブタブ帯・スクロールコンテンツが組み上がる。
 
 ---
 
@@ -123,6 +126,10 @@ target:Slider({ Name = "FOV", Min = 0, Max = 180, Default = 90, Step = 1, Suffix
 |---|---|---|---|
 | `Title` | string | `"comet"` | 通知の見出しに使う名前 |
 | `Subtitle` | string | `"loaded"` | 起動通知の本文 |
+| `BootText` | string | `Title` と同じ | 起動スプラッシュの大見出し |
+| `BootSub` | string | なし | スプラッシュの補足行 |
+| `BootHold` | number | `0.85` | スプラッシュの保持秒数 |
+| `Boot` | table / false | なし | `{ Text, SubText, Hold }` をまとめて指定。`false` で無効 |
 | `Size` | Vector2 | `(720, 404)` | ウィンドウの初期サイズ |
 | `ToggleKey` | Enum.KeyCode | `RightShift` | 表示 / 非表示のキー |
 | `OpenNotification` | boolean | `true` | 起動時に通知を出すか |
@@ -333,7 +340,7 @@ T.BlurSize  = 20
 |---|---|
 | アクリル | `Lighting.BlurEffect` を depth 管理で 1 個だけ生成。閉じると消える |
 | 半透明 | パネル `BackgroundTransparency = 0.30` ＋ 白→青のウォッシュ `UIGradient` |
-| グレア（静止） | 斜めのグロス帯 `Frame` ＋ 5 点の `Transparency` キーフレーム |
+| 起動スプラッシュ | パネル全面のオーバーレイに `BootText` / `BootSub` をフェード＋拡大で表示。`BootHold` 秒後にフェードアウトして UI を露出。クリックで即スキップ |
 | 起動 | `UIScale` 0.94→1（Back）＋ フェード ＋ 下から 14px |
 | 閉じる | フェード ＋ 少し縮んでから `Gui.Enabled = false` |
 | タブ | 背景・文字色・文字サイズ・下線グローを同時トゥイーン |
@@ -360,7 +367,7 @@ T.BlurSize  = 20
 
 - リポジトリ: `https://github.com/dakuniri/CometUI`
 - 本体: `https://raw.githubusercontent.com/dakuniri/CometUI/refs/heads/main/main.luau`
-- ローカル `UI/main.luau` の SHA-256: `4BAD42F31330657830896C5A32DB03F0028EEADE1F1A168C9928A134ACADF645`
+- ローカル `UI/main.luau` の SHA-256: `0F53D626641DDDBB532FCB7D5A2F32A009C6156583171E7D5281EDDF1722A879`
 - GitHub 上の `main.luau` はローカルの最新版に合わせて再アップロードする。
 - 更新したらこの README の URL 節と、リポジトリ側の `main.luau` を同期させる。
 

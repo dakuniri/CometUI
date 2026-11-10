@@ -566,6 +566,9 @@ end))
 local win = UIlib:CreateWindow({
 	Title = "comet",
 	Subtitle = "sample loaded",
+	BootText = "comet",
+	BootSub = "Rivals · Fly / ESP / Aimbot",
+	BootHold = 0.9,
 	Size = Vector2.new(720, 404),
 })
 

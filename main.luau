@@ -245,30 +245,6 @@ function UIlib:CreateWindow(cfg)
 		{ Color3.fromRGB(120, 145, 200), 0.905 },
 	})
 
-	-- gloss band (static diagonal sheen)
-	local gloss = create("Frame", {
-		Name = "Gloss",
-		Size = UDim2.new(0.62, 0, 1.5, 0),
-		Position = UDim2.new(-0.10, 0, -0.25, 0),
-		Rotation = -18,
-		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-		BackgroundTransparency = 0,
-		ZIndex = 4,
-		Parent = panel,
-	})
-	gradient(gloss, 0, {
-		{ Color3.fromRGB(255, 255, 255), 1 },
-		{ Color3.fromRGB(255, 255, 255), 1 },
-	})
-	local glossGradient = gloss:FindFirstChildOfClass("UIGradient")
-	glossGradient.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0.00, 1),
-		NumberSequenceKeypoint.new(0.42, 1),
-		NumberSequenceKeypoint.new(0.52, 0.80),
-		NumberSequenceKeypoint.new(0.62, 1),
-		NumberSequenceKeypoint.new(1.00, 1),
-	})
-
 	-- inner hairline
 	local innerLine = create("Frame", {
 		Name = "InnerLine",
@@ -280,6 +256,120 @@ function UIlib:CreateWindow(cfg)
 	})
 	create("UICorner", { Parent = innerLine, CornerRadius = UDim.new(0, Theme.Radius - 1) })
 	strokeOf(innerLine, Theme.Stroke, 0.94, 1)
+
+	-- boot splash (title text comes from the caller)
+	local bootConfig = cfg.Boot
+	if bootConfig ~= false then
+		local bc = type(bootConfig) == "table" and bootConfig or {}
+		local bootTitle = bc.Text or cfg.BootText or cfg.Title or "comet"
+		local bootSub = bc.SubText or cfg.BootSub
+		local bootHold = bc.Hold or cfg.BootHold or 0.85
+
+		local boot = create("Frame", {
+			Name = "Boot",
+			Size = UDim2.fromScale(1, 1),
+			BackgroundColor3 = Theme.Base,
+			BackgroundTransparency = 0.02,
+			ZIndex = 200,
+			Parent = root,
+		})
+		create("UICorner", { Parent = boot, CornerRadius = UDim.new(0, Theme.Radius) })
+
+		local title = create("TextLabel", {
+			Name = "BootTitle",
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(0.5, 0.5),
+			Size = UDim2.new(1, -48, 0, 48),
+			BackgroundTransparency = 1,
+			Font = Theme.FontBold,
+			Text = bootTitle,
+			TextSize = 26,
+			TextColor3 = Theme.Text,
+			TextTransparency = 1,
+			Parent = boot,
+		})
+
+		local sub = create("TextLabel", {
+			Name = "BootSub",
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5, 0, 0.5, 42),
+			Size = UDim2.new(1, -48, 0, 18),
+			BackgroundTransparency = 1,
+			Font = Theme.FontMedium,
+			Text = bootSub or "",
+			TextSize = 12,
+			TextColor3 = Theme.TextDim,
+			TextTransparency = 1,
+			Parent = boot,
+		})
+
+		local bar = create("Frame", {
+			Name = "BootBar",
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.new(0.5, 0, 0.5, 66),
+			Size = UDim2.fromOffset(0, 2),
+			BackgroundColor3 = Theme.Accent,
+			BackgroundTransparency = 0.2,
+			Parent = boot,
+		})
+		create("UICorner", { Parent = bar, CornerRadius = UDim.new(1, 0) })
+
+		local skip = create("TextButton", {
+			Name = "BootSkip",
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			Text = "",
+			AutoButtonColor = false,
+			Parent = boot,
+		})
+
+		local finished = false
+
+		local function finishBoot()
+			if finished then return end
+			finished = true
+			tween(boot, Ease.Out, { BackgroundTransparency = 1 })
+			tween(title, Ease.Out, { TextTransparency = 1 })
+			tween(sub, Ease.Out, { TextTransparency = 1 })
+			tween(bar, Ease.Out, { BackgroundTransparency = 1 })
+			task.delay(0.34, function()
+				if boot and boot.Parent then
+					boot:Destroy()
+				end
+			end)
+		end
+
+		skip.MouseButton1Click:Connect(function()
+			if state.alive then
+				finishBoot()
+			end
+		end)
+
+		task.spawn(function()
+			task.wait(0.30)
+			if not state.alive or finished then return end
+
+			tween(title, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+				TextTransparency = 0,
+				TextSize = 34,
+			})
+			tween(bar, TweenInfo.new(bootHold, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+				Size = UDim2.fromOffset(148, 2),
+			})
+			task.delay(0.12, function()
+				if state.alive and not finished then
+					tween(sub, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+						TextTransparency = 0,
+					})
+				end
+			end)
+
+			task.wait(bootHold + 0.10)
+			if state.alive then
+				finishBoot()
+			end
+		end)
+	end
 
 	--──────────────────────────────────────── content scaffolding
 
